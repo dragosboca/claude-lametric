@@ -1,20 +1,20 @@
 {
-  "//": "Merge this 'hooks' block into ~/.claude/settings.json (global) or a project's .claude/settings.json. Requires `claude-lametric` on PATH (uv tool install .).",
+  "//": "Merge this 'hooks' block into ~/.claude/settings.json (global) or a project's .claude/settings.json. Requires `claude-lametric` on PATH (uv tool install .). async=true keeps the network push off the session's critical path.",
   "hooks": {
     "SessionStart": [
-      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook", "async": true, "timeout": 6 }] }
     ],
     "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook", "async": true, "timeout": 6 }] }
     ],
     "Notification": [
-      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook", "async": true, "timeout": 6 }] }
     ],
     "Stop": [
-      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook", "async": true, "timeout": 6 }] }
     ],
     "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook", "async": true, "timeout": 6 }] }
     ]
   }
 }
