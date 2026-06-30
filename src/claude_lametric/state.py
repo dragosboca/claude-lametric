@@ -1,6 +1,6 @@
 """Cross-session state so the clock shows a sane aggregate.
 
-The cloud DIY app displays a single global picture, but you may run several
+The indicator app displays a single global picture, but you may run several
 Claude Code sessions at once. We persist each session's last-known status and
 usage to a small JSON file, then derive one aggregate to display.
 

@@ -9,13 +9,16 @@ ip = "192.168.1.50"
 api_key = "your-device-api-key"
 enabled = true
 
-[cloud]
-# Persistent status frames via a "My Data DIY" indicator app.
-# Create the app at developer.lametric.com, then copy its push URL + token.
-# push_url looks like:
-#   https://developer.lametric.com/api/v1/dev/widget/update/com.lametric.<APP_ID>/1
-push_url = "https://developer.lametric.com/api/v1/dev/widget/update/com.lametric.XXXX/1"
-access_token = "your-diy-app-access-token"
+[indicator]
+# Persistent status frames via a "Local Push" Indicator app (pushed over your LAN).
+# Create the app at developer.lametric.com -> Create New App -> Indicator App,
+# pick communication type "Local Push", publish, then install it on your clock.
+# The app page shows a push URL + access token. Use the HTTP form:
+#   change "https" -> "http" and port "4343" -> "8080".
+# Final push_url looks like:
+#   http://<device-ip>:8080/api/v1/dev/widget/update/com.lametric.<APP_ID>/1
+push_url = "http://192.168.1.50:8080/api/v1/dev/widget/update/com.lametric.XXXX/1"
+access_token = "your-indicator-app-access-token"
 enabled = true
 
 [behavior]

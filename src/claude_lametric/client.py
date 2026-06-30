@@ -1,4 +1,4 @@
-"""LaMetric transport: local device notifications + cloud DIY app frames.
+"""LaMetric transport: local device notifications + indicator-app frames (Local Push).
 
 Stdlib only (urllib). Both methods are best-effort and never raise on network
 errors — a hook must not break the Claude Code session because a clock is offline.
@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 from .config import Config
 
-# LaMetric self-signs its HTTPS cert on the device; the cloud endpoint is fine.
+# LaMetric self-signs its HTTPS cert on the device (port 4343); plain http on 8080 is fine.
 _INSECURE_CTX = ssl.create_default_context()
 _INSECURE_CTX.check_hostname = False
 _INSECURE_CTX.verify_mode = ssl.CERT_NONE
@@ -23,7 +23,7 @@ _INSECURE_CTX.verify_mode = ssl.CERT_NONE
 
 @dataclass
 class PushResult:
-    target: str          # "local" | "cloud"
+    target: str          # "local" | "indicator"
     ok: bool
     status: int | None = None
     error: str | None = None
@@ -35,7 +35,7 @@ class PushResult:
 
 
 def _post(url: str, body: dict, headers: dict, timeout: float, insecure: bool) -> PushResult:
-    target = "local" if "/device/notifications" in url else "cloud"
+    target = "local" if "/device/notifications" in url else "indicator"
     data = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(url, data=data, headers=headers, method="POST")
     ctx = _INSECURE_CTX if insecure else None
@@ -81,14 +81,17 @@ class LaMetricClient:
         }
         return _post(url, body, headers, self.timeout, insecure=False)
 
-    # --- Cloud DIY app: persistent status frames -------------------------
-    def push_cloud(self, frames: list[dict]) -> PushResult:
-        cloud = self.config.cloud
-        if not cloud.configured:
-            return PushResult("cloud", ok=False, error="not configured")
+    # --- Indicator app (Local Push): persistent status frames ------------
+    def push_indicator(self, frames: list[dict]) -> PushResult:
+        indicator = self.config.indicator
+        if not indicator.configured:
+            return PushResult("indicator", ok=False, error="not configured")
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "X-Access-Token": cloud.access_token,
+            "X-Access-Token": indicator.access_token,
         }
-        return _post(cloud.push_url, {"frames": frames}, headers, self.timeout, insecure=False)
+        # Local Push URL is http://<device-ip>:8080/... (insecure only matters if you
+        # kept the https:4343 form, which uses the device's self-signed cert).
+        insecure = indicator.push_url.lower().startswith("https://")
+        return _post(indicator.push_url, {"frames": frames}, headers, self.timeout, insecure)

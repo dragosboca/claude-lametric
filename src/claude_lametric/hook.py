@@ -5,7 +5,7 @@ Claude Code invokes a hook by piping a JSON object on stdin, e.g.:
      "cwd": "/path/to/project", "hook_event_name": "Stop", ...}
 
 We translate the event into a status, refresh per-session state, push the
-aggregate status frames to the cloud DIY app, and fire a transient popup on the
+aggregate status frames to the indicator app, and fire a transient popup on the
 local device for attention-worthy events (Notification, Stop).
 """
 
@@ -61,9 +61,9 @@ def handle(payload: dict, config: Config, *, event_override: str | None = None) 
     client = LaMetricClient(config)
     results: list[PushResult] = []
 
-    # Persistent status on the cloud DIY app.
-    if config.cloud.configured:
-        results.append(client.push_cloud(F.status_frames(agg, config.icons)))
+    # Persistent status on the indicator app (Local Push).
+    if config.indicator.configured:
+        results.append(client.push_indicator(F.status_frames(agg, config.icons)))
 
     # Transient popups on the local device for attention-worthy events.
     if config.local.configured:

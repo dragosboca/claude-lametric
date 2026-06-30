@@ -6,7 +6,7 @@ Config is read from (first match wins):
 
 Any value can be overridden by an environment variable (handy for hooks and CI):
   LAMETRIC_LOCAL_IP, LAMETRIC_LOCAL_API_KEY, LAMETRIC_LOCAL_ENABLED
-  LAMETRIC_CLOUD_PUSH_URL, LAMETRIC_CLOUD_ACCESS_TOKEN, LAMETRIC_CLOUD_ENABLED
+  LAMETRIC_INDICATOR_PUSH_URL, LAMETRIC_INDICATOR_ACCESS_TOKEN, LAMETRIC_INDICATOR_ENABLED
 """
 
 from __future__ import annotations
@@ -40,8 +40,8 @@ class LocalConfig:
 
 
 @dataclass
-class CloudConfig:
-    """LaMetric Cloud 'My Data DIY' indicator app (persistent status frames)."""
+class IndicatorConfig:
+    """LaMetric 'Local Push' indicator app (persistent status frames, pushed over LAN)."""
 
     push_url: str = ""
     access_token: str = ""
@@ -76,14 +76,14 @@ class Icons:
 @dataclass
 class Config:
     local: LocalConfig = field(default_factory=LocalConfig)
-    cloud: CloudConfig = field(default_factory=CloudConfig)
+    indicator: IndicatorConfig = field(default_factory=IndicatorConfig)
     behavior: Behavior = field(default_factory=Behavior)
     icons: Icons = field(default_factory=Icons)
     source_path: Path | None = None
 
     @property
     def any_configured(self) -> bool:
-        return self.local.configured or self.cloud.configured
+        return self.local.configured or self.indicator.configured
 
 
 def _load_file(path: Path) -> dict:
@@ -100,7 +100,7 @@ def load_config(path: Path | None = None) -> Config:
 
     data = _load_file(path)
     local_raw = data.get("local", {})
-    cloud_raw = data.get("cloud", {})
+    indicator_raw = data.get("indicator", {})
     behavior_raw = data.get("behavior", {})
     icons_raw = data.get("icons", {})
 
@@ -109,12 +109,14 @@ def load_config(path: Path | None = None) -> Config:
         api_key=os.environ.get("LAMETRIC_LOCAL_API_KEY", local_raw.get("api_key", "")),
         enabled=_env_bool("LAMETRIC_LOCAL_ENABLED", local_raw.get("enabled", True)),
     )
-    cloud = CloudConfig(
-        push_url=os.environ.get("LAMETRIC_CLOUD_PUSH_URL", cloud_raw.get("push_url", "")),
-        access_token=os.environ.get(
-            "LAMETRIC_CLOUD_ACCESS_TOKEN", cloud_raw.get("access_token", "")
+    indicator = IndicatorConfig(
+        push_url=os.environ.get(
+            "LAMETRIC_INDICATOR_PUSH_URL", indicator_raw.get("push_url", "")
         ),
-        enabled=_env_bool("LAMETRIC_CLOUD_ENABLED", cloud_raw.get("enabled", True)),
+        access_token=os.environ.get(
+            "LAMETRIC_INDICATOR_ACCESS_TOKEN", indicator_raw.get("access_token", "")
+        ),
+        enabled=_env_bool("LAMETRIC_INDICATOR_ENABLED", indicator_raw.get("enabled", True)),
     )
     behavior = Behavior(
         notify_on_stop=behavior_raw.get("notify_on_stop", True),
@@ -126,7 +128,7 @@ def load_config(path: Path | None = None) -> Config:
 
     return Config(
         local=local,
-        cloud=cloud,
+        indicator=indicator,
         behavior=behavior,
         icons=icons,
         source_path=path if path.is_file() else None,

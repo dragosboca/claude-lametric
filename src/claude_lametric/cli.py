@@ -51,10 +51,10 @@ def cmd_status(args, config) -> int:
     )
     client = LaMetricClient(config)
     results = []
-    if config.cloud.configured:
-        results.append(client.push_cloud(F.status_frames(agg, config.icons)))
+    if config.indicator.configured:
+        results.append(client.push_indicator(F.status_frames(agg, config.icons)))
     else:
-        print("cloud not configured; status frames go to the DIY app", file=sys.stderr)
+        print("indicator app not configured; status frames need [indicator]", file=sys.stderr)
     return _print_results(results)
 
 
@@ -75,8 +75,8 @@ def cmd_test(args, config) -> int:
     agg = Aggregate("working", 1, "claude-notifications", 45_000, 12_300, 200_000)
     client = LaMetricClient(config)
     results = []
-    if config.cloud.configured:
-        results.append(client.push_cloud(F.status_frames(agg, config.icons)))
+    if config.indicator.configured:
+        results.append(client.push_indicator(F.status_frames(agg, config.icons)))
     if config.local.configured:
         results.append(
             client.notify_local(
@@ -93,7 +93,8 @@ def cmd_doctor(args, config) -> int:
     print(f"config source : {config.source_path or '(none — using defaults/env)'}")
     print(f"local device  : {'configured' if config.local.configured else 'NOT configured'}"
           + (f"  ({config.local.ip})" if config.local.ip else ""))
-    print(f"cloud DIY app : {'configured' if config.cloud.configured else 'NOT configured'}")
+    print(f"indicator app : {'configured' if config.indicator.configured else 'NOT configured'}"
+          + ("  (local push)" if config.indicator.configured else ""))
     print(f"context limit : {config.behavior.context_limit:,} tokens")
     print(f"notify on stop: {config.behavior.notify_on_stop}")
     print(f"notify on perm: {config.behavior.notify_on_permission}")

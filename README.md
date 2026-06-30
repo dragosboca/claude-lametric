@@ -4,14 +4,16 @@ Show **Claude Code** status, notifications, and token usage on a **LaMetric Time
 
 Claude Code hooks fire on real events in your sessions and push to the clock two ways:
 
-- **Cloud DIY app** (persistent) — a "My Data DIY" indicator app cycles frames showing the
-  current status, a context-window goal bar, and output tokens. Works from anywhere.
-- **Local device** (instant) — a popup notification on your LAN when Claude needs your
+- **Indicator app** (persistent, **Local Push**) — an Indicator app cycles frames showing the
+  current status, a context-window goal bar, and output tokens. Pushed to the clock over your LAN.
+- **Local device** (instant) — a popup notification when Claude needs your
   attention (permission / input) or finishes a turn.
+
+Both transports are LAN-local (no server to host, nothing relayed through the cloud).
 
 ```
 ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐
-│ ⏳ Working: app │ → │ ▓▓▓▓░░ 45k tok  │ → │ 📊 12.3k out    │
+│ ⏳ Working: app  │ → │ ▓▓▓▓░░ 45k tok  │ → │ 📊 12.3k out   │
 └─────────────────┘   └─────────────────┘   └─────────────────┘
    status frame          context goal           output tokens
 ```
@@ -38,11 +40,13 @@ uv tool install .          # puts `claude-lametric` on your PATH
    - `ip` — LaMetric app → Settings → Wi-Fi → IP Address
    - `api_key` — [developer.lametric.com](https://developer.lametric.com) → your account → **Devices** → API key
 
-3. **Cloud DIY app** (persistent status):
-   - At [developer.lametric.com](https://developer.lametric.com), create a **"My Data DIY"**
-     indicator app (push / "predefined JSON" mode). Add it to your clock.
-   - Copy its **push URL** (`…/api/v1/dev/widget/update/com.lametric.<APP_ID>/1`) and
-     **access token** into `[cloud]`.
+3. **Indicator app** (persistent status, Local Push):
+   - At [developer.lametric.com](https://developer.lametric.com) → **Create New App → Indicator App**,
+     choose communication type **Local Push**, **Publish**, then install the app on your clock.
+   - The app page shows a **push URL** + **access token**. Use the HTTP form — change
+     `https`→`http` and port `4343`→`8080`, giving
+     `http://<device-ip>:8080/api/v1/dev/widget/update/com.lametric.<APP_ID>/1`.
+   - Put the push URL and token into `[indicator]`.
 
 Either section is optional — configure one or both. Check what's resolved:
 
@@ -52,7 +56,7 @@ claude-lametric test     # pushes a sample status + popup to your clock
 ```
 
 > Every value can also be set via env var: `LAMETRIC_LOCAL_IP`, `LAMETRIC_LOCAL_API_KEY`,
-> `LAMETRIC_CLOUD_PUSH_URL`, `LAMETRIC_CLOUD_ACCESS_TOKEN`, etc. — useful for secrets.
+> `LAMETRIC_INDICATOR_PUSH_URL`, `LAMETRIC_INDICATOR_ACCESS_TOKEN`, etc. — useful for secrets.
 
 ## Wire up the hooks
 
@@ -115,7 +119,7 @@ uv run pytest      # offline tests, no device needed
 ```
 src/claude_lametric/
   config.py   load TOML + env overrides
-  client.py   HTTP transport (local notifications + cloud frames)
+  client.py   HTTP transport (local notifications + indicator-app frames)
   usage.py    parse transcript .jsonl for token usage
   state.py    per-session state + cross-session aggregate
   frames.py   build LaMetric frame payloads

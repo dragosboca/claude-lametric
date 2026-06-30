@@ -53,7 +53,7 @@ def output_text_frame(agg: Aggregate, icons: Icons) -> dict | None:
 
 
 def status_frames(agg: Aggregate, icons: Icons) -> list[dict]:
-    """Full set of frames for the persistent cloud DIY app."""
+    """Full set of frames for the persistent indicator app."""
     frames: list[dict] = [status_text_frame(agg, icons)]
     ctx = context_goal_frame(agg, icons)
     if ctx:
