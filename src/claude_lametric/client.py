@@ -86,12 +86,15 @@ class LaMetricClient:
         indicator = self.config.indicator
         if not indicator.configured:
             return PushResult("indicator", ok=False, error="not configured")
+        # My Data DIY's local push endpoint (http://<ip>:8080/api/v2/widget/update/...)
+        # uses HTTP Basic auth: username "dev", password = the app's access token
+        # (used verbatim) — NOT the X-Access-Token header the old cloud push used.
+        token = base64.b64encode(f"dev:{indicator.access_token}".encode()).decode()
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "X-Access-Token": indicator.access_token,
+            "Authorization": f"Basic {token}",
         }
-        # Local Push URL is http://<device-ip>:8080/... (insecure only matters if you
-        # kept the https:4343 form, which uses the device's self-signed cert).
+        # insecure only matters if you kept the https:4343 form (self-signed cert).
         insecure = indicator.push_url.lower().startswith("https://")
         return _post(indicator.push_url, {"frames": frames}, headers, self.timeout, insecure)
