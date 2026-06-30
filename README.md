@@ -41,12 +41,12 @@ uv tool install .          # puts `claude-lametric` on your PATH
    - `api_key` — [developer.lametric.com](https://developer.lametric.com) → your account → **Devices** → API key
 
 3. **Indicator app** (persistent status, Local Push):
-   - At [developer.lametric.com](https://developer.lametric.com) → **Create New App → Indicator App**,
-     choose communication type **Local Push**, **Publish**, then install the app on your clock.
-   - The app page shows a **push URL** + **access token**. Use the HTTP form — change
-     `https`→`http` and port `4343`→`8080`, giving
-     `http://<device-ip>:8080/api/v1/dev/widget/update/com.lametric.<APP_ID>/1`.
-   - Put the push URL and token into `[indicator]`.
+   - Local Push lives in the **My Data DIY** app (the custom Indicator App builder redirects
+     you to it). Install **My Data DIY** on your clock and set its push method to **HTTP / Local Push**.
+   - It shows a **push URL** + **access token**. Use the HTTP form (`http`, port `8080`):
+     `http://<device-ip>:8080/api/v2/widget/update/com.lametric.diy.devwidget/<WIDGET_ID>`.
+   - Put the push URL and token into `[indicator]`. (The endpoint uses HTTP Basic auth —
+     user `dev`, password = the token; the client does this for you.)
 
 Either section is optional — configure one or both. Check what's resolved:
 
