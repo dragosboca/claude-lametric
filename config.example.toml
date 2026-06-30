@@ -1,0 +1,34 @@
+# Copy to ~/.config/claude-lametric/config.toml and fill in your values.
+# Every field can also be set via env var (see README) — handy for hooks.
+
+[local]
+# Instant notification popups over your LAN.
+# IP: LaMetric app -> Settings -> Wi-Fi -> IP Address
+# api_key: developer.lametric.com -> your account -> Devices -> API key
+ip = "192.168.1.50"
+api_key = "your-device-api-key"
+enabled = true
+
+[cloud]
+# Persistent status frames via a "My Data DIY" indicator app.
+# Create the app at developer.lametric.com, then copy its push URL + token.
+# push_url looks like:
+#   https://developer.lametric.com/api/v1/dev/widget/update/com.lametric.<APP_ID>/1
+push_url = "https://developer.lametric.com/api/v1/dev/widget/update/com.lametric.XXXX/1"
+access_token = "your-diy-app-access-token"
+enabled = true
+
+[behavior]
+notify_on_stop = true        # local popup when Claude finishes a turn
+notify_on_permission = true  # local popup when Claude needs attention/permission
+context_limit = 200000       # token budget for the context goal frame
+idle_after_minutes = 30      # forget sessions silent longer than this
+
+[icons]
+# Pick IDs at https://developer.lametric.com/icons ('a' = animation, 'i' = static).
+working = "a2740"
+waiting = "a4849"
+idle    = "i120"
+done    = "a1054"
+tokens  = "i555"
+error   = "a9335"

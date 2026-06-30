@@ -1,0 +1,20 @@
+{
+  "//": "Merge this 'hooks' block into ~/.claude/settings.json (global) or a project's .claude/settings.json. Requires `claude-lametric` on PATH (uv tool install .).",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+    ],
+    "Notification": [
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+    ],
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "claude-lametric hook" }] }
+    ]
+  }
+}
